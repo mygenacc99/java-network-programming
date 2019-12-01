@@ -76,7 +76,6 @@ public class UDPServer {
             String reply = requestProcessing(request);
             DatagramPacket outsending = new DatagramPacket(reply.getBytes(), reply.getBytes().length, incoming.getAddress(), incoming.getPort());
 
-
             ds.send(outsending);
         }
     }

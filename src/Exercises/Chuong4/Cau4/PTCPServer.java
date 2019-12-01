@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class PTCPServer {
     private int DEFAULT_PORT = 6969;
-    public static String fileName = "/home/colab/IdeaProjects/Chuong4/src/Exercises/Chuong4/Cau4/accounts.txt";
+    public static String fileName = "/home/colab/IdeaProjects/Network Programming/src/Exercises/Chuong4/Cau4/accounts.txt";
     public static Map<String, String> accounts = null;
 
     /**
@@ -29,7 +29,7 @@ public class PTCPServer {
         return accounts;
     }
 
-    public void addAccount(String username, String password) throws IOException {
+    public synchronized void addAccount(String username, String password) throws IOException {
         File file = new File(fileName);
         FileWriter fileWriter = new FileWriter(file, true);
         fileWriter.write(username+ "|" + password +"\n");
@@ -42,17 +42,19 @@ public class PTCPServer {
         String[] slipted = request.split("\\|");
         System.out.println(slipted.length);
         // Check login.
-        if (slipted[0].equals("1")) {
-            if (accounts.get(slipted[1]) != null) {
-                if (accounts.get(slipted[1]).equals(slipted[2])) reply = "Login successfully!";
-                else reply = "The username or password is wrong! Please check it again!";
-            } else reply = "The username or password is wrong! Please check it again!";
-        } else { // Register
-            if (accounts.containsKey(slipted[1])) {
-                reply = "The username already exists. Please use a different username!";
-            } else {
-                addAccount(slipted[1], slipted[2]);
-                reply = "Register successfully!";
+        synchronized (accounts){
+            if (slipted[0].equals("1")) {
+                if (accounts.get(slipted[1]) != null) {
+                    if (accounts.get(slipted[1]).equals(slipted[2])) reply = "Login successfully!";
+                    else reply = "The username or password is wrong! Please check it again!";
+                } else reply = "The username or password is wrong! Please check it again!";
+            } else { // Register
+                if (accounts.containsKey(slipted[1])) {
+                    reply = "The username already exists. Please use a different username!";
+                } else {
+                    addAccount(slipted[1], slipted[2]);
+                    reply = "Register successfully!";
+                }
             }
         }
         return reply;
