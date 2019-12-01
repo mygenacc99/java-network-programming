@@ -29,11 +29,13 @@ public class PTCPServer {
         return accounts;
     }
 
-    public synchronized void addAccount(String username, String password) throws IOException {
+    public void addAccount(String username, String password) throws IOException {
         File file = new File(fileName);
         FileWriter fileWriter = new FileWriter(file, true);
         fileWriter.write(username+ "|" + password +"\n");
-        accounts.put(username, password);
+        synchronized (accounts) {
+            accounts.put(username, password);
+        }
         fileWriter.close();
     }
 
